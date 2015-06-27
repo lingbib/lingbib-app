@@ -14,6 +14,7 @@ for common git commands used to manage your respositories.
 Commands:
   # main commands
   branch  Switch between normal (master) and contributor (contrib) branches.
+  config  Check configuration, and attempt to fix any problems.
   pull    Fetch updates from lingbib (upstream) or personal remote
             repo (origin).
   push    Update personal remote repo (origin) with changes to local repo.
@@ -36,12 +37,12 @@ For futher help, see README.md or https://github.com/lingbib/lingbib.
 
 from __future__ import print_function
 import sys
-from subprocess import call
 
 from lib.docopt import docopt
 
 from util import *
 import addentry
+import config
 import update
 
 
@@ -52,6 +53,7 @@ __date__ =    "6/27/2015"
 
 # mapping from command names to main function from each subscript
 COMMANDS = {'addentry':addentry.addentry,
+            'config':config.config,
             'update':update.update}
 
 
