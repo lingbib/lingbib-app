@@ -29,9 +29,9 @@ def config(argv):
     args = docopt(__doc__, argv=argv, help=True)
 
     if args['--auto']:
-        raise NotImplementedError('Shell script not yet integrated.') 
+        raise NotImplementedError("'--auto' option not implemented.")
     else:
-        check()
+        raise NotImplementedError("Command not implemented.")
 
 
 def check():
