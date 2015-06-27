@@ -13,7 +13,6 @@ Options:
 """
 
 from __future__ import print_function
-from subprocess import call
 import sys
 
 from lib.docopt import docopt
@@ -24,8 +23,6 @@ __date__ =    "6/27/2015"
 
 def update(argv):
     args = docopt(__doc__, argv=argv, help=True)
-
-    # print(args)
 
     db = args['PERSONAL_DB']
     if db == None:

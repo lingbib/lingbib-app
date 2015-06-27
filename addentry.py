@@ -16,7 +16,6 @@ Options:
 """
 
 from __future__ import print_function
-from subprocess import call
 
 from lib.docopt import docopt
 
@@ -26,8 +25,6 @@ __date__ =    "6/27/2015"
 
 def addentry(argv):
     args = docopt(__doc__, argv=argv, help=True)
-
-    # print(args)
 
     if args['FILE']:
         # run script in debug mode
