@@ -1,26 +1,6 @@
 #!/usr/bin/env python
 
 """
-lingbib.py
-
-This script provides a simple command line interface for using and contributing
-to lingbib.
-"""
-
-
-from __future__ import print_function
-import sys
-from subprocess import call
-
-from lib.docopt import docopt
-
-
-__author__ =  "Kenneth Hanson"
-__version__ = "0.0.0"
-__date__ =    "6/27/2015"
-
-
-usage = """
 Usage:
   lingbib.py <command> [<args>...]
   lingbib.py --help
@@ -54,75 +34,51 @@ For futher help, see README.md or https://github.com/lingbib/lingbib.
 """
 
 
-def debug(obj):
-    print("DEBUG: " + str(obj))
+from __future__ import print_function
+import sys
+from subprocess import call
+
+from lib.docopt import docopt
+
+from util import *
+import addentry
+import update
 
 
-#
-# Main function
-#
+__author__ =  "Kenneth Hanson"
+__version__ = "0.0.0"
+__date__ =    "6/27/2015"
 
-"""
-Interpret command line arguments and run the corresponding command.
-"""
+
+# mapping from command names to main function from each subscript
+COMMANDS = {'addentry':addentry.addentry,
+            'update':update.update}
+
+
 def main(argv):
-    args = docopt(usage, argv=argv, version=__version__,
+    """
+    Interpret command line arguments and run the corresponding command.
+    """
+    args = docopt(__doc__, argv=argv, version=__version__,
                   help=True, options_first=True)
     
     cmd = args['<command>']
     subargv = [cmd] + args['<args>']
-
+    
     if cmd in COMMANDS:
-        action = COMMANDS[cmd]
-        action(subargv)
+        handler = COMMANDS[cmd]
+        handler(subargv)
+    elif cmd == 'help':
+        help_text(subargv)
+    elif cmd == 'version':
+        version_text(subargv)
     else:
         raise Exception("Invalid command: {cmd}".format(cmd=cmd) +
                         " Check that the 'usage' string and the COMMANDS" +
                         " dictionary are in sync.")
 
 
-#
-# Command definitions
-#
-# All functions expect a list containing the command name followed by any
-#   options and arguments.
-#
-
-
-def add_entry(argv):
-    """
-    Usage:
-      lingbib.py addentry [options] FILE
-      lingbib.py addentry [options] (-i | --interactive)
-      lingbib.py --help
-
-    Arguments:
-      FILE  File containing new entries to process.
-      
-    Options:
-      -i --interactive  Opens the default editor for quick data entry,
-                          on systems where this feature exists.
-      -h --help         Show this help text and quit.
-    """
-    args = docopt(add_entry.__doc__, argv=argv,help=True)
-
-    # print(args)
-
-    if args['FILE']:
-        # run script in debug mode
-        print("Calling scripts/addentry.sh with '{}'".format(args['FILE']))
-        # call(['sh', '-n', 'scripts/addentry.sh', args['FILE']])
-        raise NotImplementedError('Shell script not yet integrated.') 
-    elif args['--interactive']:
-        raise NotImplementedError('Interactive mode not yet implemented.')
-    else:
-        # TODO: remove after testing code
-        raise Exception("Reached the end of command line arg processing"
-                        "without doing anything. Code has a logic error.")
-
-
-
-def help_msg(argv):
+def help_text(argv):
     """
     Given a lingbib command, print help text that command.
     If none give, print the main help text.
@@ -130,51 +86,18 @@ def help_msg(argv):
     """
     if len(argv) > 1 and argv[1] in COMMANDS:
         cmd = argv[1]
-        action = COMMANDS[cmd]
-        action(['--help'])
+        handler = COMMANDS[cmd]
+        handler(['--help'])
     else:
         main(['--help'])
 
 
-
-def update(argv):
-    """
-    Usage:
-      lingbib.py update [options] [PERSONAL_DB]
-      lingbib.py update --help
-
-    Arguments:
-      PERSONAL_DB  Path to personal database. [default: lingbib-personal.bib]
-      
-    Options:
-      -h --help         Show this help text and quit.
-    """
-    args = docopt(update.__doc__, argv=argv, help=True)
-
-    # print(args)
-
-    db = args['PERSONAL_DB']
-    if db == None:
-        db = "lingbib-personal.bib"
-
-    # run script in debug mode
-    # call(['sh', '-n', 'scripts/update_personal_db.sh', db])
-    print("Calling scripts/update_personal_db.sh with '{}'".format(db))
-    raise NotImplementedError('Shell script not yet integrated.') 
-
-
-def version(argv):
+def version_text(argv):
     """
     Print the program version.
     Uses the docopt implementation of the '--version' option.
     """
     main(['--version'])
-
-
-COMMANDS = {'addentry':add_entry,
-            'update':update,
-            'help':help_msg,
-            'version':version}
 
 
 if __name__ == '__main__':
