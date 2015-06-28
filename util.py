@@ -16,4 +16,3 @@ def warning(msg):
 
 def error(msg):
     print("Error: " + msg)
-    exit(1)
