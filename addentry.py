@@ -24,6 +24,9 @@ __date__ =    "6/27/2015"
 
 
 def main(argv):
+    """
+    Interpret command line arguments and run the corresponding command.
+    """
     args = docopt(__doc__, argv=argv, help=True)
 
     if args['FILE']:
