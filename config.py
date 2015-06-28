@@ -18,6 +18,7 @@ Links are symlinks to the bibliography files.
 from __future__ import print_function
 
 from lib.docopt import docopt
+from lib import sh
 from lib.sh import git
 
 from util import *
@@ -85,7 +86,7 @@ def bibedit_branch_exists():
 def remote_origin_url():
     try:
         return git.config("remote.origin.url")
-    except ErrorReturnCode:
+    except sh.ErrorReturnCode:
         return None
 
 def remote_origin_url_set():
@@ -94,7 +95,7 @@ def remote_origin_url_set():
 def remote_upstream_url():
     try:
         return git.config("remote.upstream.url")
-    except ErrorReturnCode:
+    except sh.ErrorReturnCode:
         return None
 
 def remote_upstream_url_set():
@@ -103,7 +104,7 @@ def remote_upstream_url_set():
 def using_ssh_urls():
     try:
         return "git@github" in git.remote("-v")
-    except ErrorReturnCode:
+    except sh.ErrorReturnCode:
         return False
 
 
@@ -115,6 +116,9 @@ def using_ssh_urls():
 #     if not 'upstream' in git.remote():
 #         out = git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
 #         print(out)
+
+def set_remote_upstream_url():
+    git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
 
 
 if __name__ == '__main__':
