@@ -75,7 +75,7 @@ def main(argv):
     elif cmd == 'version':
         version_text(subargv)
     else:
-        raise InputError("Invalid command: {cmd}".format(cmd=cmd) +
+        raise Exception("Invalid command: {cmd}".format(cmd=cmd) +
                         " Check that the 'usage' string and the COMMANDS" +
                         " dictionary are in sync.")
 
