@@ -53,7 +53,7 @@ __date__ =    "6/27/2015"
 
 # mapping from command names to main function from each subscript
 COMMANDS = {'addentry':addentry.main,
-            'config':config.config,
+            'config':config.main,
             'update':update.main}
 
 

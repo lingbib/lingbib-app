@@ -2,7 +2,8 @@
 
 """
 Usage:
-  lingbib.py config [options] (origin | upstream | links | all)
+  lingbib.py config [options] check
+  lingbib.py config set
   lingbib.py --help
   
 Options:
@@ -15,29 +16,106 @@ Links are symlinks to the bibliography files.
 """
 
 from __future__ import print_function
-from subprocess import call
-import os
 
 from lib.docopt import docopt
 from lib.sh import git
+
+from util import *
 
 __author__ =  "Kenneth Hanson"
 __date__ =    "6/27/2015"
 
 
-def config(argv):
+UPSTREAM_URLS = {"https" : "https://github.com/lingbib/lingbib.git",
+                 "ssh" : "git@github.com:lingbib/lingbib"}
+
+
+def main(argv):
+    """
+    Interpret command line arguments and run the corresponding command.
+    """
     args = docopt(__doc__, argv=argv, help=True)
 
     if args['--auto']:
         raise NotImplementedError("'--auto' option not implemented.")
-    else:
-        raise NotImplementedError("Command not implemented.")
+    
+    if args["check"]:
+        check_all()
+    elif args["set"]:
+        raise NotImplementedError("'set' subcommand not implemented.")
 
 
-def check():
-    pass
-    # out = git("branch")
-    # print(out)
+#
+# Functions for reporting on local settings
+#
+
+results = {True : "OK", False: "***NO***"}
+
+def config_test(description, test_func):
+    result = test_func()
+    print(description + "..." + results[result])
+    return result
+
+def check_all():
+    num_failed = 0
+    num_failed += config_test("Branch 'master' exists", master_branch_exists)
+    num_failed += config_test("Branch 'bib-edit' exists", bibedit_branch_exists)
+    num_failed += config_test("Remote repo 'origin' set to personal repo",
+                              remote_origin_url_set)
+    num_failed += config_test("Remote repo 'upstream' set to lingbib repo",
+                              remote_upstream_url_set)
+
+    if using_ssh_urls():
+        warning("Currently configured to use SSH URL(s). This may not work"
+                " if SSH is not configured appropriately.")
+    if num_failed > 0:
+        warning("One or more tests failed.")
+
+
+#
+# query functions
+#
+
+def master_branch_exists():
+    return 'master' in git.branch()
+
+def bibedit_branch_exists():
+    return 'bibedit' in git.branch()
+
+def remote_origin_url():
+    try:
+        return git.config("remote.origin.url")
+    except ErrorReturnCode:
+        return None
+
+def remote_origin_url_set():
+    return remote_origin_url() != None
+
+def remote_upstream_url():
+    try:
+        return git.config("remote.upstream.url")
+    except ErrorReturnCode:
+        return None
+
+def remote_upstream_url_set():
+    return remote_upstream_url().strip() in UPSTREAM_URLS.values()
+
+def using_ssh_urls():
+    try:
+        return "git@github" in git.remote("-v")
+    except ErrorReturnCode:
+        return False
+
+
+#
+# setter functions
+#
+
+# def set_master():
+#     if not 'upstream' in git.remote():
+#         out = git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
+#         print(out)
+
 
 if __name__ == '__main__':
-    addentry(sys.argv[1:]) # strip program name
+    main(sys.argv[1:]) # strip program name
