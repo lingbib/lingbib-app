@@ -52,9 +52,9 @@ __date__ =    "6/27/2015"
 
 
 # mapping from command names to main function from each subscript
-COMMANDS = {'addentry':addentry.addentry,
+COMMANDS = {'addentry':addentry.main,
             'config':config.config,
-            'update':update.update}
+            'update':update.main}
 
 
 def main(argv):

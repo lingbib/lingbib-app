@@ -21,7 +21,7 @@ __author__ =  "Kenneth Hanson"
 __date__ =    "6/27/2015"
 
 
-def update(argv):
+def main(argv):
     args = docopt(__doc__, argv=argv, help=True)
 
     db = args['PERSONAL_DB']
@@ -35,4 +35,4 @@ def update(argv):
 
 
 if __name__ == '__main__':
-  addentry(sys.argv[1:]) # strip program name
+  main(sys.argv[1:]) # strip program name
