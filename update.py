@@ -10,6 +10,7 @@ Arguments:
   
 Options:
   -h --help         Show this help text and quit.
+  --debug           Allow code to be tested on branch "cli-dev".
 """
 
 from __future__ import print_function
@@ -38,22 +39,27 @@ def main(argv):
     if pdb_path == None:
         pdb_path = defaults.DB_PERSONAL
 
-    update_personal_db(pdb_path)
+    update_personal_db(pdb_path, debug_mode=args['--debug'])
     
 
-def update_personal_db(personal_db_path, any_branch=False):
+def update_personal_db(personal_db_path, debug_mode=False):
     """
     Reimplementation of scripts/update_personal_db.sh.
     """
     info("Using '{db}' as personal database.".format(db=personal_db_path))
     
     # force the master branch to be used
-    # try:
-    #     git.checkout("master")
-    # except sh.ErrorReturnCode as e:
-    #     error(e.stderr)
-    #     error("Please fix any problems and switch to the master branch manually.")
-    #     exit(1)
+    if debug_mode:
+        debug("Currently on branch 'cli-dev'. Skipping switch to 'master'.")
+    else:
+        info("Not currently on 'master' branch. Switching now.")
+        try:
+            git.checkout("master")
+        except sh.ErrorReturnCode as e:
+            error(e.stderr)
+            error("Unable to switch branches. "
+                  "Please fix any Git problems and try again.")
+            exit(1)
 
     # make sure upstream repo is set
     if not config.remote_upstream_url_set():
@@ -62,24 +68,40 @@ def update_personal_db(personal_db_path, any_branch=False):
             config.set_remote_upstream_url()
         except sh.ErrorReturnCode as e:
             error(e.stderr)
-            error("Unable to set upstream repo.")
+            error("Unable to set upstream repo."
+                  " Please fix any Git problems and try again.")
             exit(1)
         else:
             info("Upstream repo set.")
     
     # fetch updates from upstream master
-    # try:
-    #     git.pull("--rebase upstream master".split())
-    # except sh.ErrorReturnCode as e:
-    #     error(e.stderr)
-    #     error("Please run 'git pull --rebase upstream master' and resolve the \
-    #            conflicts. Then you can rerun this script to update your personal \
-    #            copy of the database")
-    #     exit(1)
+    if debug_mode:
+        debug("Currently on branch 'cli-dev'. Skipping pull to 'master'.")
+    else:
+        info("Pulling updates to master database...")
+        try:
+            git.pull("--rebase upstream master".split())
+        except sh.ErrorReturnCode as e:
+            error(e.stderr)
+            error("Please run 'git pull --rebase upstream master' and resolve "
+                  "the conflicts, then try again.")
+            exit(1)
+        else:
+            info("Update complete.")
+
 
     # invoke bibtool to merge master and personal databases, overwriting personal
-    out = bibtool("-r", "bibtool/personal-merge.rsc", personal_db_path, defaults.DB_BIBLATEX_MASTER, o=personal_db_path)
-    print(defaults.DB_BIBLATEX_MASTER, personal_db_path, out)
+    info("Merging master database with personal database.")
+    cmd_status = bibtool("-r", "bibtool/personal-merge.rsc", personal_db_path, defaults.DB_MASTER, o=personal_db_path)
+    if cmd_status.stdout != "":
+        info(cmd_status.stdout)
+    # bibtool doesn't return a non-zero exit code for bad filenames,
+    #   so for now check if stdout and stderr are nonempty and print manually
+    if cmd_status.stderr != "":
+        error("Call to Bibtool failed.")
+        error(cmd_status.stderr)
+    else:
+        info("Merge complete.")
 
 
 if __name__ == '__main__':
