@@ -16,6 +16,7 @@ Links are symlinks to the bibliography files.
 """
 
 from __future__ import print_function
+import sys
 
 from lib.docopt import docopt
 from lib import sh
@@ -60,7 +61,7 @@ def config_test(description, test_func):
 def check_all():
     num_failed = 0
     num_failed += config_test("Branch 'master' exists", master_branch_exists)
-    num_failed += config_test("Branch 'bib-edit' exists", bibedit_branch_exists)
+    num_failed += config_test("Branch 'dbedit' exists", dbedit_branch_exists)
     num_failed += config_test("Remote repo 'origin' set to personal repo",
                               remote_origin_url_set)
     num_failed += config_test("Remote repo 'upstream' set to lingbib repo",
@@ -80,8 +81,8 @@ def check_all():
 def master_branch_exists():
     return 'master' in git.branch()
 
-def bibedit_branch_exists():
-    return 'bibedit' in git.branch()
+def dbedit_branch_exists():
+    return 'dbedit' in git.branch()
 
 def remote_origin_url():
     try:
@@ -90,7 +91,7 @@ def remote_origin_url():
         return None
 
 def remote_origin_url_set():
-    return remote_origin_url() != None
+    return remote_origin_url() is not None
 
 def remote_upstream_url():
     try:
@@ -99,7 +100,11 @@ def remote_upstream_url():
         return None
 
 def remote_upstream_url_set():
-    return remote_upstream_url().strip() in UPSTREAM_URLS.values()
+    url = remote_upstream_url()
+    if url is None:
+        return False
+    else:
+        return url.strip() in UPSTREAM_URLS.values()
 
 def using_ssh_urls():
     try:
@@ -121,5 +126,10 @@ def set_remote_upstream_url():
     git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
 
 
+def test():
+    check_all()
+
+
 if __name__ == '__main__':
-    main(sys.argv[1:]) # strip program name
+    # main(sys.argv[1:]) # strip program name
+    test()
