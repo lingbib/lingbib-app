@@ -43,7 +43,7 @@ from lib.docopt import docopt
 
 from util import *
 import addentry
-import branch
+import switch
 import config
 import update
 
