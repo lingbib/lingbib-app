@@ -9,8 +9,9 @@ Arguments:
   PERSONAL_DB  Path to personal database. [default: lingbib-personal.bib]
   
 Options:
-  --debug       Make code work on "cli-dev" by skipping branch change.
-  -h --help     Show this help text and quit.
+  --debug        Make code work on "cli-dev" by skipping branch change.
+  -h --help      Show this help text and quit.
+  -n --nobackup  Don't make a backup of the personal bibfile.
 """
 
 from __future__ import print_function
@@ -49,13 +50,14 @@ def update_personal_db(personal_db_path, debug_mode=False):
     """
     Reimplementation of scripts/update_personal_db.sh.
     """
+    # ensure that personal database exists
     if os.path.isfile(personal_db_path):
         info("Using '{db}' as personal database.".format(db=personal_db_path))
     else:
         error("Personal database '{db}' does not exist.".format(
               db=personal_db_path))
         exit(1)
-        
+
     # force the master branch to be used
     if debug_mode:
         debug("Skipping switch to branch 'master'.")
@@ -97,6 +99,17 @@ def update_personal_db(personal_db_path, debug_mode=False):
         else:
             info("Update complete.")
 
+    # backup current personal bibfile
+    backup_path = personal_db_path + ".old"
+    try:
+        sh.cp(personal_db_path, backup_path)
+    except sh.ErrorReturnCode as e:
+        error("Unable to make a backup of the current personal database.")
+        error(e.stderr)
+        exit(1)
+    else:
+        info("Backed up current personal database as '{old}'.".format(
+             old=backup_path))
 
     # invoke BibTool to merge master and personal databases, overwriting personal
     # Note: BibTool considers things that should be errors as warnings, and
@@ -106,7 +119,7 @@ def update_personal_db(personal_db_path, debug_mode=False):
         cmd_status = bibtool("-r", "bibtool/personal-merge.rsc",
         personal_db_path, defaults.DB_MASTER, o=personal_db_path,
         _out=handle_bibtool_output, _err=handle_bibtool_output)
-    except ErrorReturnCode as e:
+    except sh.ErrorReturnCode as e:
         error("Call to BibTool failed.")
         error(e.stderr)
         exit(1)
