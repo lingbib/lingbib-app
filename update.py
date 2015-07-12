@@ -15,6 +15,7 @@ Options:
 
 from __future__ import print_function
 import sys
+import os
 
 from lib.docopt import docopt
 from lib import sh
@@ -48,8 +49,13 @@ def update_personal_db(personal_db_path, debug_mode=False):
     """
     Reimplementation of scripts/update_personal_db.sh.
     """
-    info("Using '{db}' as personal database.".format(db=personal_db_path))
-    
+    if os.path.isfile(personal_db_path):
+        info("Using '{db}' as personal database.".format(db=personal_db_path))
+    else:
+        error("Personal database '{db}' does not exist.".format(
+              db=personal_db_path))
+        exit(1)
+        
     # force the master branch to be used
     if debug_mode:
         debug("Skipping switch to branch 'master'.")
@@ -96,9 +102,14 @@ def update_personal_db(personal_db_path, debug_mode=False):
     # Note: BibTool considers things that should be errors as warnings, and
     #   doesn't return an error code so for now just print warnings
     info("Merging master database with personal database.")
-    cmd_status = bibtool("-r", "bibtool/personal-merge.rsc",
+    try:
+        cmd_status = bibtool("-r", "bibtool/personal-merge.rsc",
         personal_db_path, defaults.DB_MASTER, o=personal_db_path,
         _out=handle_bibtool_output, _err=handle_bibtool_output)
+    except ErrorReturnCode as e:
+        error("Call to BibTool failed.")
+        error(e.stderr)
+        exit(1)
 
 
 def handle_bibtool_output(line):
