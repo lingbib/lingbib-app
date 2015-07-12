@@ -9,8 +9,8 @@ Arguments:
   PERSONAL_DB  Path to personal database. [default: lingbib-personal.bib]
   
 Options:
-  -h --help         Show this help text and quit.
-  --debug           Allow code to be tested on branch "cli-dev".
+  --debug       Make code work on "cli-dev" by skipping branch change.
+  -h --help     Show this help text and quit.
 """
 
 from __future__ import print_function
@@ -39,6 +39,8 @@ def main(argv):
     if pdb_path == None:
         pdb_path = defaults.DB_PERSONAL
 
+    if args['--debug']:
+        debug("***Debug mode enabled.***")
     update_personal_db(pdb_path, debug_mode=args['--debug'])
     
 
@@ -50,7 +52,7 @@ def update_personal_db(personal_db_path, debug_mode=False):
     
     # force the master branch to be used
     if debug_mode:
-        debug("Currently on branch 'cli-dev'. Skipping switch to 'master'.")
+        debug("Skipping switch to branch 'master'.")
     else:
         info("Not currently on 'master' branch. Switching now.")
         try:
@@ -76,7 +78,7 @@ def update_personal_db(personal_db_path, debug_mode=False):
     
     # fetch updates from upstream master
     if debug_mode:
-        debug("Currently on branch 'cli-dev'. Skipping pull to 'master'.")
+        debug("Skipping pull to branch 'master'.")
     else:
         info("Pulling updates to master database...")
         try:
@@ -90,18 +92,18 @@ def update_personal_db(personal_db_path, debug_mode=False):
             info("Update complete.")
 
 
-    # invoke bibtool to merge master and personal databases, overwriting personal
+    # invoke BibTool to merge master and personal databases, overwriting personal
+    # Note: BibTool considers things that should be errors as warnings, and
+    #   doesn't return an error code so for now just print warnings
     info("Merging master database with personal database.")
-    cmd_status = bibtool("-r", "bibtool/personal-merge.rsc", personal_db_path, defaults.DB_MASTER, o=personal_db_path)
-    if cmd_status.stdout != "":
-        info(cmd_status.stdout)
-    # bibtool doesn't return a non-zero exit code for bad filenames,
-    #   so for now check if stdout and stderr are nonempty and print manually
-    if cmd_status.stderr != "":
-        error("Call to Bibtool failed.")
-        error(cmd_status.stderr)
-    else:
-        info("Merge complete.")
+    cmd_status = bibtool("-r", "bibtool/personal-merge.rsc",
+        personal_db_path, defaults.DB_MASTER, o=personal_db_path,
+        _out=handle_bibtool_output, _err=handle_bibtool_output)
+
+
+def handle_bibtool_output(line):
+    if line != "":
+        print(line)
 
 
 if __name__ == '__main__':
