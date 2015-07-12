@@ -53,7 +53,10 @@ __date__ =    "6/27/2015"
 
 # mapping from command names to main function from each subscript
 COMMANDS = {'addentry':addentry.main,
+            'branch':None,
             'config':config.main,
+            'pull':None,
+            'push':None,
             'update':update.main}
 
 
@@ -69,15 +72,16 @@ def main(argv):
     
     if cmd in COMMANDS:
         handler = COMMANDS[cmd]
-        handler(subargv)
+        if handler is None:
+            raise NotImplementedError("Command not implemented.")
+        else:
+            handler(subargv)
     elif cmd == 'help':
         help_text(subargv)
     elif cmd == 'version':
         version_text(subargv)
     else:
-        raise Exception("Invalid command: {cmd}".format(cmd=cmd) +
-                        " Check that the 'usage' string and the COMMANDS" +
-                        " dictionary are in sync.")
+        raise Exception("Invalid command: {cmd}".format(cmd=cmd))
 
 
 def help_text(argv):
