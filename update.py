@@ -99,6 +99,9 @@ def update_personal_db(personal_db_path, debug_mode=False):
         else:
             info("Update complete.")
 
+    # fetch updates from origin (personal repo) master
+    # TODO
+    
     # backup current personal bibfile
     backup_path = personal_db_path + ".old"
     try:
