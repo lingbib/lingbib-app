@@ -18,12 +18,12 @@ Commands:
   pull    Fetch updates from lingbib (upstream) or personal remote
             repo (origin).
   push    Update personal remote repo (origin) with changes to local repo.
-  switch  Switch between normal (master) and contributor (contrib) branches.
+  switch  Switch between normal (master) and database editing (dbedit) branches.
   update  Update local repo from lingbib AND personal remote repo if
             applicable, then merge changes to lingbib-master.bib into
             lingbib-personal.bib.
   
-  # contrib branch only
+  # branch 'dbedit' only
   addentry  Process new entry, integrate into local master database,
               stage, and commit.
 
