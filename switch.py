@@ -31,6 +31,8 @@ def main(argv):
     if args['master']:
         git.checkout("master")
     elif args['dbedit']:
+        # NOTE: this will reset 'dbedit' every time, which needs to be changed
+        #   in the future
         git.checkout("-B", "dbedit")
     else:
         # TODO: remove after testing code
