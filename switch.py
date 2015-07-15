@@ -26,7 +26,6 @@ def main(argv):
     Interpret command line arguments and run the corresponding command.
     """
     args = docopt(__doc__, argv=argv, help=True)
-    debug(args)
 
     if args['master']:
         git.checkout("master")
