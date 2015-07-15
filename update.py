@@ -72,7 +72,7 @@ def update_personal_db(personal_db_path, debug_mode=False):
             exit(1)
 
     # make sure upstream repo is set
-    if not config.remote_upstream_url_set():
+    if not config.remote_upstream_url_is_set():
         info("Upstream repo not set. Setting now...")
         try:
             config.set_remote_upstream_url()

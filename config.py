@@ -63,9 +63,9 @@ def check_all():
     num_failed += config_test("Branch 'master' exists", master_branch_exists)
     num_failed += config_test("Branch 'dbedit' exists", dbedit_branch_exists)
     num_failed += config_test("Remote repo 'origin' set to personal repo",
-                              remote_origin_url_set)
+                              remote_origin_url_is_set)
     num_failed += config_test("Remote repo 'upstream' set to lingbib repo",
-                              remote_upstream_url_set)
+                              remote_upstream_url_is_set)
 
     if using_ssh_urls():
         warning("Currently configured to use SSH URL(s). This may not work"
@@ -90,7 +90,7 @@ def remote_origin_url():
     except sh.ErrorReturnCode:
         return None
 
-def remote_origin_url_set():
+def remote_origin_url_is_set():
     return remote_origin_url() is not None
 
 def remote_upstream_url():
@@ -99,7 +99,7 @@ def remote_upstream_url():
     except sh.ErrorReturnCode:
         return None
 
-def remote_upstream_url_set():
+def remote_upstream_url_is_set():
     url = remote_upstream_url()
     if url is None:
         return False
