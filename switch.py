@@ -49,7 +49,7 @@ def main(argv):
             if config.branch_dbedit_exists():
                 prompt_to_reset_dbedit()
             else:
-                switch_to_dbedit()
+                create_dbedit_and_switch()
     else:
         # TODO: remove after testing code
         raise Exception("Reached the end of command line arg processing "
