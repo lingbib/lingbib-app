@@ -112,6 +112,21 @@ def using_ssh_urls():
     except sh.ErrorReturnCode:
         return False
 
+def unstaged_changes_exist():
+    try:
+        git("diff-files", "--quiet")
+    except sh.ErrorReturnCode:
+        return True
+    else:
+        return False
+
+def uncommited_staged_changes_exist():
+    try:
+        git("diff-index", "--quiet", "--cached", "HEAD")
+    except sh.ErrorReturnCode:
+        return True
+    else:
+        return False
 
 #
 # setter functions

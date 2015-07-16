@@ -16,6 +16,7 @@ from lib.sh import git
 
 from util import *
 import config
+import messages
 
 __author__ =  "Kenneth Hanson"
 __date__ =    "7/12/2015"
@@ -26,6 +27,14 @@ def main(argv):
     Interpret command line arguments and run the corresponding command.
     """
     args = docopt(__doc__, argv=argv, help=True)
+
+    if config.unstaged_changes_exist():
+        error(messages.UNSTAGED_CHANGES_ERROR)
+        exit(1)
+
+    if config.uncomitted_staged_chagnes_exit():
+        error(messages.UNCOMITTED_STAGED_CHANGES_ERROR)
+        exit(1)
 
     if args['master']:
         git.checkout("master")
