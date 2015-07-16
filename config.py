@@ -60,8 +60,8 @@ def config_test(description, test_func):
 
 def check_all():
     num_failed = 0
-    num_failed += config_test("Branch 'master' exists", master_branch_exists)
-    num_failed += config_test("Branch 'dbedit' exists", dbedit_branch_exists)
+    num_failed += config_test("Branch 'master' exists", branch_master_exists)
+    num_failed += config_test("Branch 'dbedit' exists", branch_dbedit_exists)
     num_failed += config_test("Remote repo 'origin' set to personal repo",
                               remote_origin_url_is_set)
     num_failed += config_test("Remote repo 'upstream' set to lingbib repo",
@@ -78,10 +78,10 @@ def check_all():
 # query functions
 #
 
-def master_branch_exists():
+def branch_master_exists():
     return 'master' in git.branch()
 
-def dbedit_branch_exists():
+def branch_dbedit_exists():
     return 'dbedit' in git.branch()
 
 def remote_origin_url():
