@@ -84,6 +84,9 @@ def branch_master_exists():
 def branch_dbedit_exists():
     return 'dbedit' in git.branch()
 
+def remote_origin_dbedit_exists():
+    return 'dbedit' in git.branch("-r")
+    
 def remote_origin_url():
     try:
         return git.config("remote.origin.url")

@@ -81,7 +81,7 @@ Is your last pull request still open?"""
 
 def switch_to_master():
     git.checkout("master")
-    
+
 def update_master():
     git.pull("--rebase", "upstream", "master")
 
@@ -93,13 +93,17 @@ def switch_to_dbedit():
 
 def create_dbedit_and_switch():
     update_master()
+    
     # create the new branch based on master and switch immediately
     git.checkout("-b", "dbedit", "master")
 
 def reset_dbedit_and_switch():
     update_master()
-    # delete remote branch
-    git.push("origin", "--delete", "dbedit")
+
+    # delete remote branch, if applicable
+    if config.remote_origin_dbedit_exists():
+        git.push("origin", "--delete", "dbedit")
+
     # switch to branch, creating it if it doesn't exist
     git.checkout("-B", "dbedit", "master")
 
