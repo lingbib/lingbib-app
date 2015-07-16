@@ -29,6 +29,9 @@ def main(argv):
     """
     args = docopt(__doc__, argv=argv, help=True)
 
+    if not config.remote_upstream_url_is_set():
+        config.set_remote_upstream_url()
+        
     if config.unstaged_changes_exist():
         error(messages.UNSTAGED_CHANGES_ERROR)
         exit(1)

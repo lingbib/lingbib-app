@@ -138,7 +138,21 @@ def uncommitted_staged_changes_exist():
 #         print(out)
 
 def set_remote_upstream_url():
-    git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
+    if config.remote_upstream_url_is_set():
+        info("Upstream repo already set.")
+    else:
+        info("Setting upstream repo now...")
+        try:
+            git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
+        except sh.ErrorReturnCode as e:
+            error(e.stderr)
+            error("Unable to set upstream repo."
+                  " Please fix any Git problems and try again.")
+            exit(1)
+        else:
+            info("Upstream repo set.")
+    
+
 
 
 def test():

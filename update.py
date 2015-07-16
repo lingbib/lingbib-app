@@ -73,16 +73,7 @@ def update_personal_db(personal_db_path, debug_mode=False):
 
     # make sure upstream repo is set
     if not config.remote_upstream_url_is_set():
-        info("Upstream repo not set. Setting now...")
-        try:
-            config.set_remote_upstream_url()
-        except sh.ErrorReturnCode as e:
-            error(e.stderr)
-            error("Unable to set upstream repo."
-                  " Please fix any Git problems and try again.")
-            exit(1)
-        else:
-            info("Upstream repo set.")
+        config.set_remote_upstream_url()
     
     # fetch updates from upstream master
     if debug_mode:
