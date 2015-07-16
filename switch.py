@@ -33,7 +33,7 @@ def main(argv):
         error(messages.UNSTAGED_CHANGES_ERROR)
         exit(1)
 
-    if config.uncomitted_staged_changes_exit():
+    if config.uncomitted_staged_changes_exist():
         error(messages.UNCOMITTED_STAGED_CHANGES_ERROR)
         exit(1)
 
