@@ -120,7 +120,7 @@ def unstaged_changes_exist():
     else:
         return False
 
-def uncommited_staged_changes_exist():
+def uncommitted_staged_changes_exist():
     try:
         git("diff-index", "--quiet", "--cached", "HEAD")
     except sh.ErrorReturnCode:
