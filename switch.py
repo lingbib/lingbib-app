@@ -31,7 +31,7 @@ def main(argv):
 
     if not config.remote_upstream_url_is_set():
         config.set_remote_upstream_url()
-        
+
     if config.unstaged_changes_exist():
         error(messages.UNSTAGED_CHANGES_ERROR)
         exit(1)
@@ -79,6 +79,9 @@ closed, the branch should be deleted and recreated.
 Is your last pull request still open?"""
 
 
+def switch_to_master():
+    git.checkout("master")
+    
 def update_master():
     git.pull("--rebase", "upstream", "master")
 
