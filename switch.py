@@ -2,11 +2,12 @@
 
 """
 Usage:
-  lingbib.py switch (master | dbedit)
+  lingbib.py switch [options] (master | dbedit)
   lingbib.py --help
   
 Options:
   -h --help         Show this help text and quit.
+  -r --reset        Reset branch if it already exists (only for "dbedit").
 """
 
 from __future__ import print_function
@@ -37,15 +38,64 @@ def main(argv):
         exit(1)
 
     if args['master']:
-        git.checkout("master")
+        switch_to_master()
     elif args['dbedit']:
-        # NOTE: this will reset 'dbedit' every time, which needs to be changed
-        #   in the future
-        git.checkout("-B", "dbedit")
+        if args["--reset"]:
+            reset_dbedit_and_switch()
+        else:
+            if config.branch_dbedit_exists():
+                prompt_to_reset_dbedit()
+            else:
+                switch_to_dbedit()
     else:
         # TODO: remove after testing code
-        raise Exception("Reached the end of command line arg processing"
+        raise Exception("Reached the end of command line arg processing "
                         "without doing anything. Code has a logic error.")
+
+
+def prompt_to_reset_dbedit():
+    print(RESET_MSG)
+    while True:
+        try:
+            line = raw_input("Please enter 'y' or 'n' (CTRL-D to cancel): ")
+        except EOFError:
+            break
+        else:
+            if line == 'y':
+                switch_to_dbedit()
+                break
+            elif line == 'n':
+                reset_dbedit_and_switch()
+            else:
+                continue
+
+RESET_MSG = """\
+Branch 'dbedit' already exists. If you have a pull request that is still open,
+you can safely make additional modifications. If your last pull request is
+closed, the branch should be deleted and recreated.
+Is your last pull request still open?"""
+
+
+def update_master():
+    git.pull("--rebase", "upstream", "master")
+
+def switch_to_dbedit():
+    # TODO: confirm that this is really what we want
+    # I don't think it will actually update "dbedit"
+    update_master()
+    git.checkout("dbedit")
+
+def create_dbedit_and_switch():
+    update_master()
+    # create the new branch based on master and switch immediately
+    git.checkout("-b", "dbedit", "master")
+
+def reset_dbedit_and_switch():
+    update_master()
+    # delete remote branch
+    git.push("origin", "--delete", "dbedit")
+    # switch to branch, creating it if it doesn't exist
+    git.checkout("-B", "dbedit", "master")
 
 
 if __name__ == '__main__':
