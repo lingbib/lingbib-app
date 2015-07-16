@@ -138,7 +138,7 @@ def uncommitted_staged_changes_exist():
 #         print(out)
 
 def set_remote_upstream_url():
-    if config.remote_upstream_url_is_set():
+    if remote_upstream_url_is_set():
         info("Upstream repo already set.")
     else:
         info("Setting upstream repo now...")
