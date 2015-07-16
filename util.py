@@ -1,7 +1,7 @@
 """
 Utility functions for lingbib app.
 
-Logging functions currently use the print statement. In the future, they will
+Logging functions currently use the print function. In the future, they will
 use the Python logging system.
 """
 
