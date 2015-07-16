@@ -15,4 +15,4 @@ def warning(msg):
     print("WARNING: " + msg)
 
 def error(msg):
-    print("Error: " + msg)
+    print("ERROR: " + msg)
