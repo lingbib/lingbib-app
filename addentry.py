@@ -18,6 +18,11 @@ Options:
 from __future__ import print_function
 
 from lib.docopt import docopt
+from lib.sh import bibtool
+from lib.sh import git
+
+import defaults
+from util import *
 
 __author__ =  "Kenneth Hanson"
 __date__ =    "6/27/2015"
@@ -29,17 +34,27 @@ def main(argv):
     """
     args = docopt(__doc__, argv=argv, help=True)
 
-    if args['FILE']:
-        # run script in debug mode
-        print("Calling scripts/addentry.sh with '{}'".format(args['FILE']))
-        # call(['sh', '-n', 'scripts/addentry.sh', args['FILE']])
-        raise NotImplementedError('Shell script not yet integrated.') 
+    if args['FILE'] is not None:
+        addentry(args['FILE'])
     elif args['--interactive']:
         raise NotImplementedError('Interactive mode not yet implemented.')
     else:
         # TODO: remove after testing code
         raise Exception("Reached the end of command line arg processing"
                         "without doing anything. Code has a logic error.")
+
+def addentry(filepath):
+    # autogen keys
+    bibtool('-r', "bibtool/keygen.rsc", filepath, o=filepath)
+
+    # merge with master database
+    bibtool("-r", "bibtool/sanitize.rsc", filepath, defaults.DB_MASTER, o=defaults.DB_MASTER)
+
+    # Update macro and refs file
+    bibtool("-r", "bibtool/ref-extraction.rsc", defaults.DB_MASTER, o="MacrosAndRefs.txt")
+
+    # Then stage the new changes
+    git.add(defaults.DB_MASTER)
 
 
 if __name__ == '__main__':
