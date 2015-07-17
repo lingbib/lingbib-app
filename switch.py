@@ -29,9 +29,7 @@ def main(argv):
     """
     args = docopt(__doc__, argv=argv, help=True)
 
-    if not config.remote_upstream_url_is_set():
-        config.set_remote_upstream_url()
-
+    # ensure that current branch is clean
     if config.unstaged_changes_exist():
         error(messages.UNSTAGED_CHANGES_ERROR)
         exit(1)
@@ -40,21 +38,36 @@ def main(argv):
         error(messages.UNCOMITTED_STAGED_CHANGES_ERROR)
         exit(1)
 
+
+
     if args['master']:
         switch_to_master()
     elif args['dbedit']:
-        if args["--reset"]:
-            reset_dbedit_and_switch()
-        else:
-            if config.branch_dbedit_exists():
-                prompt_to_reset_dbedit()
-            else:
-                create_dbedit_and_switch()
+        switch_to_dbedit(do_reset=args["--reset"])
+        
     else:
         # TODO: remove after testing code
         raise Exception("Reached the end of command line arg processing "
                         "without doing anything. Code has a logic error.")
 
+
+def switch_to_master():
+    git.checkout("master")
+
+
+def switch_to_dbedit(do_reset=False):
+    # fetch updates
+    if not config.remote_upstream_url_is_set():
+        config.set_remote_upstream_url()
+    fetch_upstream()
+
+    if do_reset:
+        reset_dbedit_and_switch()
+    else:
+        if config.branch_dbedit_exists():
+            prompt_to_reset_dbedit()
+        else:
+            create_dbedit_and_switch()
 
 def prompt_to_reset_dbedit():
     print(RESET_MSG)
@@ -65,10 +78,11 @@ def prompt_to_reset_dbedit():
             break
         else:
             if line == 'y':
-                switch_to_dbedit()
+                switch_to_existing_dbedit()
                 break
             elif line == 'n':
                 reset_dbedit_and_switch()
+                break
             else:
                 continue
 
@@ -79,33 +93,34 @@ closed, the branch should be deleted and recreated.
 Is your last pull request still open?"""
 
 
-def switch_to_master():
-    git.checkout("master")
+def fetch_upstream():
+    info("Fetching updates from Lingbib upstream...")
+    try:
+        git.fetch("upstream")
+    except sh.ErrorReturnCode as e:
+        error("Unable to fetch updates.")
+    else:
+        info("Up to date.")
 
-def update_master():
-    git.pull("--rebase", "upstream", "master")
-
-def switch_to_dbedit():
-    # TODO: confirm that this is really what we want
-    # I don't think it will actually update "dbedit"
-    update_master()
+def switch_to_existing_dbedit():
     git.checkout("dbedit")
+    git.rebase("upstream/master")
 
 def create_dbedit_and_switch():
-    update_master()
-    
-    # create the new branch based on master and switch immediately
-    git.checkout("-b", "dbedit", "master")
+    """create the new branch based on master and switch immediately"""
+    git.checkout("-b", "dbedit", "upstream/master")
 
 def reset_dbedit_and_switch():
-    update_master()
-
     # delete remote branch, if applicable
     if config.remote_origin_dbedit_exists():
-        git.push("origin", "--delete", "dbedit")
+        try:
+            git.push("origin", "--delete", "dbedit")
+        except sh.ErrorReturnCode as e:
+            error(e)
+            error("Unable to delete the remote branch.")
 
     # switch to branch, creating it if it doesn't exist
-    git.checkout("-B", "dbedit", "master")
+    git.checkout("-B", "dbedit", "upstream/master")
 
 
 if __name__ == '__main__':
