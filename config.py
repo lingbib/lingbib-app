@@ -2,12 +2,11 @@
 
 """
 Usage:
-  lingbib.py config [options] check
-  lingbib.py config set
+  lingbib.py config check
+  lingbib.py config setdefaults
   lingbib.py --help
   
 Options:
-  -a --auto  Take all defaults.
   -h --help  Show this help text and quit.
 
 Origin is your personal repository.
@@ -37,18 +36,15 @@ def main(argv):
     Interpret command line arguments and run the corresponding command.
     """
     args = docopt(__doc__, argv=argv, help=True)
-
-    if args['--auto']:
-        raise NotImplementedError("'--auto' option not implemented.")
     
     if args["check"]:
         check_all()
-    elif args["set"]:
-        raise NotImplementedError("'set' subcommand not implemented.")
+    elif args["setdefaults"]:
+        set_defaults()
 
 
 #
-# Functions for reporting on local settings
+# Functions for reporting configuration
 #
 
 results = {True : "OK", False: "***NO***"}
@@ -61,17 +57,19 @@ def config_test(description, test_func):
 def check_all():
     num_failed = 0
     num_failed += config_test("Branch 'master' exists", branch_master_exists)
-    num_failed += config_test("Branch 'dbedit' exists", branch_dbedit_exists)
-    num_failed += config_test("Remote repo 'origin' set to personal repo",
+    num_failed += config_test("Branch 'master' tracking remote 'origin'", branch_master_tracking_origin)
+    # num_failed += config_test("Branch 'dbedit' exists", branch_dbedit_exists)
+    num_failed += config_test("Remote repo 'origin' set",
                               remote_origin_url_is_set)
+    num_failed += config_test("Remote repo 'origin' is not lingbib/lingbib",
+                              remote_origin_url_is_not_upstream_repo)
     num_failed += config_test("Remote repo 'upstream' set to lingbib repo",
                               remote_upstream_url_is_set)
-
+    if num_failed > 0:
+        warning("One or more tests failed.")
     if using_ssh_urls():
         warning("Currently configured to use SSH URL(s). This may not work"
                 " if SSH is not configured appropriately.")
-    if num_failed > 0:
-        warning("One or more tests failed.")
 
 
 #
@@ -80,6 +78,9 @@ def check_all():
 
 def branch_master_exists():
     return 'master' in git.branch()
+
+def branch_master_tracking_origin():
+    return 'origin' in git.config("branch.master.remote")
 
 def branch_dbedit_exists():
     return 'dbedit' in git.branch()
@@ -95,6 +96,13 @@ def remote_origin_url():
 
 def remote_origin_url_is_set():
     return remote_origin_url() is not None
+
+def remote_origin_url_is_not_upstream_repo():
+    url = remote_origin_url()
+    if url is None:
+        return True
+    else:
+        return url.strip() not in UPSTREAM_URLS.values()
 
 def remote_upstream_url():
     try:
@@ -131,14 +139,40 @@ def uncommitted_staged_changes_exist():
     else:
         return False
 
+
 #
 # setter functions
 #
 
-# def set_master():
-#     if not 'upstream' in git.remote():
-#         out = git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
-#         print(out)
+def set_defaults():
+    if not remote_origin_url_is_set():
+        warning("Remote 'origin' not set. "
+                "Please set it to your personal fork manually.")
+        warning("Skipping other settings that depend on this.")
+    else:
+        if not branch_master_exists():
+            git.checkout("master", "remote/origin")
+        elif not branch_master_tracking_origin():
+            set_branch_master_tracking()
+
+    if not remote_upstream_url_is_set():
+        set_remote_upstream_url()
+
+
+def set_branch_master_tracking():
+    if branch_master_tracking_origin():
+        info("Branch 'master' already tracking origin.")
+    else:
+        try:
+            git.branch("--set-upstream-to", "origin/master", "master")
+        except sh.ErrorReturnCode as e:
+            error(e.stderr)
+            error("Unable to set tracking for branch 'master'."
+                  " Please fix any Git problems and try again.")
+            exit(1)
+        else:
+            info("Upstream repo set.")
+
 
 def set_remote_upstream_url():
     if remote_upstream_url_is_set():
@@ -156,10 +190,8 @@ def set_remote_upstream_url():
             info("Upstream repo set.")
     
 
-
-
-def test():
-    check_all()
+# def test():
+#     check_all()
 
 
 if __name__ == '__main__':
