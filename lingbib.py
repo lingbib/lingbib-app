@@ -38,6 +38,7 @@ For futher help, see README.md or https://github.com/lingbib/lingbib.
 
 from __future__ import print_function
 import sys
+import os
 
 from lib.docopt import docopt
 
@@ -53,6 +54,9 @@ __version__ = "0.0.0"
 __date__ =    "6/27/2015"
 
 
+# used to identify local Lingbib repo
+LINGBIB_DOTFILE = ".lingbib"
+
 # mapping from command names to main function from each subscript
 COMMANDS = {'addentry':addentry.main,
             'switch':switch.main,
@@ -66,9 +70,12 @@ def main(argv):
     """
     Interpret command line arguments and run the corresponding command.
     """
+    startup_check()
+
+    # process command line arguments
     args = docopt(__doc__, argv=argv, version=__version__,
                   help=True, options_first=True)
-    
+
     cmd = args['<command>']
     subargv = [cmd] + args['<args>']
     
@@ -84,6 +91,12 @@ def main(argv):
         version_text(subargv)
     else:
         raise Exception("Invalid command: {cmd}".format(cmd=cmd))
+
+
+def startup_check():
+    """Print warning if current directory not a Lingbib repo."""
+    if not os.path.isfile(LINGBIB_DOTFILE):
+        warning("Current working directory doesn't look like a Lingbib repo.")
 
 
 def help_text(argv):
