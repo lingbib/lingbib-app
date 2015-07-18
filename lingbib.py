@@ -12,19 +12,20 @@ personal database with a remote repository. Most commands are simple wrappers
 for common git commands used to manage your respositories.
 
 Commands:
-  # main commands
-  
+  # general commands
   config  Check configuration, and attempt to fix any problems.
   pull    Fetch updates from lingbib (upstream) or personal remote
             repo (origin).
   push    Update personal remote repo (origin) with changes to local repo.
   switch  Switch between normal (master) and database editing (dbedit) branches.
+
+  # branch "master" only
   update  Update local repo from lingbib AND personal remote repo if
             applicable, then merge changes to lingbib-master.bib into
             lingbib-personal.bib.
   
   # branch 'dbedit' only
-  addentry  Process new entry, integrate into local master database,
+  addentry  Process new entry, merge into local master database,
               stage, and commit.
 
 Options:
