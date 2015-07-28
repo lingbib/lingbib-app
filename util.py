@@ -5,6 +5,8 @@ Logging functions currently use the print function. In the future, they will
 use the Python logging system.
 """
 
+from __future__ import print_function
+
 def debug(obj):
     print("DEBUG: " + str(obj))
 
@@ -16,3 +18,6 @@ def warning(msg):
 
 def error(msg):
     print("ERROR: " + msg)
+
+def gitout(msg):
+    print("GIT: " + msg, end='')

@@ -38,8 +38,6 @@ def main(argv):
         error(messages.UNCOMITTED_STAGED_CHANGES_ERROR)
         exit(1)
 
-
-
     if args['master']:
         switch_to_master()
     elif args['dbedit']:
@@ -52,7 +50,10 @@ def main(argv):
 
 
 def switch_to_master():
-    git.checkout("master")
+    if config.current_branch() == "master":
+        print("Already on branch 'master'.")
+    else:
+        git.checkout("master")
 
 
 def switch_to_dbedit(do_reset=False):
