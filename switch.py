@@ -53,10 +53,14 @@ def switch_to_master():
     if config.current_branch() == "master":
         print("Already on branch 'master'.")
     else:
-        git.checkout("master")
+        cmd = git.checkout("master", _out=gitout)
 
 
 def switch_to_dbedit(do_reset=False):
+    if config.current_branch() == "dbedit":
+        print("Already on branch 'dbedit'.")
+        return
+
     # fetch updates
     if not config.remote_upstream_url_is_set():
         config.set_remote_upstream_url()
@@ -79,7 +83,7 @@ def prompt_to_reset_dbedit():
             break
         else:
             if line == 'y':
-                switch_to_existing_dbedit()
+                update_dbedit_and_switch()
                 break
             elif line == 'n':
                 reset_dbedit_and_switch()
@@ -91,7 +95,7 @@ RESET_MSG = """\
 Branch 'dbedit' already exists. If you have a pull request that is still open,
 you can safely make additional modifications. If your last pull request is
 closed, the branch should be deleted and recreated.
-Is your last pull request still open?"""
+Do you want to reuse the existing branch?"""
 
 
 def fetch_upstream():
@@ -103,13 +107,13 @@ def fetch_upstream():
     else:
         info("Up to date.")
 
-def switch_to_existing_dbedit():
-    git.checkout("dbedit")
-    git.rebase("upstream/master")
+def update_dbedit_and_switch():
+    git.checkout("dbedit", _out=gitout)
+    git.rebase("upstream/master", _out=gitout)
 
 def create_dbedit_and_switch():
     """create the new branch based on master and switch immediately"""
-    git.checkout("-b", "dbedit", "upstream/master")
+    git.checkout("-b", "dbedit", "upstream/master", _out=gitout)
 
 def reset_dbedit_and_switch():
     # delete remote branch, if applicable
@@ -121,7 +125,7 @@ def reset_dbedit_and_switch():
             error("Unable to delete the remote branch.")
 
     # switch to branch, creating it if it doesn't exist
-    git.checkout("-B", "dbedit", "upstream/master")
+    git.checkout("-B", "dbedit", "upstream/master", _out=gitout)
 
 
 if __name__ == '__main__':
