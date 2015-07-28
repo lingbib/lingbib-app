@@ -76,6 +76,9 @@ def check_all():
 # query functions
 #
 
+def current_branch():
+    return git("rev-parse", "--abbrev-ref", "HEAD").strip()
+
 def branch_master_exists():
     return 'master' in git.branch()
 
