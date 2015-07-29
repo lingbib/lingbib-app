@@ -3,6 +3,7 @@
 """
 Usage:
   lingbib.py config check
+  lingbib.py config dump
   lingbib.py config setdefaults
   lingbib.py --help
   
@@ -43,6 +44,8 @@ def main(argv):
     
     if args["check"]:
         check_all()
+    elif args["dump"]:
+        dump()
     elif args["setdefaults"]:
         set_defaults()
 
@@ -73,10 +76,20 @@ def check_all():
     num_failed += config_test("Remote repo 'upstream' set to lingbib repo  ",
                               remote_upstream_url_is_set)
     if num_failed > 0:
-        warning("One or more tests failed.")
+        warning("One or more tests failed."
+                " Run `lingbib.py config dump` to see the relevant settings.")
     if using_ssh_urls():
         warning("Currently configured to use SSH URL(s). This may not work"
                 " if SSH is not configured appropriately.")
+
+def dump():
+    """Print raw config info."""
+    print("-----Git Branches-----")
+    git.branch("-vv", _out=gitout)
+
+    print()
+    print("-----Git Remotes-----")
+    git.remote("-v", "show", _out=gitout)
 
 
 #
