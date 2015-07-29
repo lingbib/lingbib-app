@@ -117,6 +117,8 @@ def remote_upstream_url():
     except sh.ErrorReturnCode:
         return None
 
+# TODO: decide whether to switch to substring matching
+#   for "github.com" and "lingbib/lingbib"
 def remote_upstream_url_is_set():
     url = remote_upstream_url()
     if url is None:
