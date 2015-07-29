@@ -56,7 +56,7 @@ results = {True : "OK", False: "***NO***"}
 def config_test(description, test_func):
     result = test_func()
     print(description + "..." + results[result])
-    return result
+    return 0 if result is True else 1
 
 def check_all():
     num_failed = 0
