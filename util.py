@@ -24,7 +24,9 @@ def error(msg):
     _wrapprint("ERROR: " + msg)
 
 def gitout(msg):
+    """Print without added trailing newline. Used for output from calls to Git."""
     _wrapprint("GIT: " + msg, end='')
 
 def _wrapprint(s):
+    """Wrap text to proper terminal width, with slight hanging indentation."""
     print(textwrap.fill(s, width=80, subsequent_indent='  '))
