@@ -97,7 +97,7 @@ def remote_origin_dbedit_exists():
     
 def remote_origin_url():
     try:
-        return git.config("remote.origin.url")
+        return git.config("remote.origin.url").strip()
     except sh.ErrorReturnCode:
         return None
 
@@ -109,11 +109,11 @@ def remote_origin_url_is_not_upstream_repo():
     if url is None:
         return True
     else:
-        return url.strip() not in UPSTREAM_URLS.values()
+        return url not in UPSTREAM_URLS.values()
 
 def remote_upstream_url():
     try:
-        return git.config("remote.upstream.url")
+        return git.config("remote.upstream.url").strip()
     except sh.ErrorReturnCode:
         return None
 
@@ -124,7 +124,7 @@ def remote_upstream_url_is_set():
     if url is None:
         return False
     else:
-        return url.strip() in UPSTREAM_URLS.values()
+        return url in UPSTREAM_URLS.values()
 
 def using_ssh_urls():
     try:
