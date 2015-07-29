@@ -27,8 +27,12 @@ __author__ =  "Kenneth Hanson"
 __date__ =    "6/27/2015"
 
 
-UPSTREAM_URLS = {"https" : "https://github.com/lingbib/lingbib.git",
-                 "ssh" : "git@github.com:lingbib/lingbib"}
+UPSTREAM_URLS = {"http":  "http://github.com/lingbib/lingbib",
+                 "https": "https://github.com/lingbib/lingbib",
+                 "ssh":   "git@github.com:lingbib/lingbib",
+                 "http.git":  "http://github.com/lingbib/lingbib.git",
+                 "https.git": "https://github.com/lingbib/lingbib.git",
+                 "ssh.git":   "git@github.com:lingbib/lingbib.git"}
 
 
 def main(argv):
