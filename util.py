@@ -6,21 +6,25 @@ use the Python logging system.
 """
 
 from __future__ import print_function
+import textwrap
 
 def debug(msg):
-    print("DEBUG: " + msg)
+    _wrapprint("DEBUG: " + msg)
 
 def debug_obj(obj):
-    print("DEBUG: " + str(obj))
+    _wrapprint("DEBUG: " + str(obj))
 
 def info(msg):
-    print("INFO: " + msg)
+    _wrapprint("INFO: " + msg)
 
 def warning(msg):
-    print("WARNING: " + msg)
+    _wrapprint("WARNING: " + msg)
 
 def error(msg):
-    print("ERROR: " + msg)
+    _wrapprint("ERROR: " + msg)
 
 def gitout(msg):
-    print("GIT: " + msg, end='')
+    _wrapprint("GIT: " + msg, end='')
+
+def _wrapprint(s):
+    print(textwrap.fill(s, width=80, subsequent_indent='  '))
