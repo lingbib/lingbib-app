@@ -6,10 +6,9 @@ Usage:
   lingbib.py --help
   lingbib.py --version
 
-Use this script to fetch updates from lingbib, merge them with your personal
+Use this script to fetch updates from Lingbib, merge them with your personal
 database, make contributions to the master database, and sync your
-personal database with a remote repository. Most commands are simple wrappers
-for common git commands used to manage your respositories.
+personal database with a remote repository.
 
 Commands:
   # general commands
@@ -31,6 +30,9 @@ Commands:
 Options:
   -h --help  Show this help text.
   --version  Show version.
+
+Note: the current working directory must be a Lingbib repository in order
+to use any commands other than "help" and "version".
 
 See 'lingbib.py help <command>' for more information on a specific command.
 For futher help, see README.md or https://github.com/lingbib/lingbib.
@@ -71,8 +73,6 @@ def main(argv):
     """
     Interpret command line arguments and run the corresponding command.
     """
-    startup_check()
-
     # process command line arguments
     args = docopt(__doc__, argv=argv, version=__version__,
                   help=True, options_first=True)
@@ -81,6 +81,8 @@ def main(argv):
     subargv = [cmd] + args['<args>']
     
     if cmd in COMMANDS:
+        startup_check()
+
         handler = COMMANDS[cmd]
         if handler is None:
             raise NotImplementedError("Command not implemented.")
@@ -95,9 +97,10 @@ def main(argv):
 
 
 def startup_check():
-    """Print warning if current directory not a Lingbib repo."""
+    """Print error if current directory not a Lingbib repo."""
     if not os.path.isfile(LINGBIB_DOTFILE):
-        warning("Current working directory doesn't look like a Lingbib repo.")
+        error("Current working directory is not a Lingbib repo.")
+        exit()
 
 
 def help_text(argv):
