@@ -6,13 +6,14 @@ Usage:
   lingbib.py config dump
   lingbib.py config setdefaults
   lingbib.py --help
-  
+
+Subcommands:
+  check        check that local repository is set up correctly
+  dump         display relevant raw Git configuration data for debugging
+  setdefaults  set relevant Git configuration to default values
+
 Options:
   -h --help  Show this help text and quit.
-
-Origin is your personal repository.
-Upstream is the lingbib repo.
-Links are symlinks to the bibliography files.
 """
 
 from __future__ import print_function
