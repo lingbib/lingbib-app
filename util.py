@@ -7,7 +7,10 @@ use the Python logging system.
 
 from __future__ import print_function
 
-def debug(obj):
+def debug(msg):
+    print("DEBUG: " + msg)
+
+def debug_obj(obj):
     print("DEBUG: " + str(obj))
 
 def info(msg):
