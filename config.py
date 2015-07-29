@@ -51,23 +51,26 @@ def main(argv):
 # Functions for reporting configuration
 #
 
-results = {True : "OK", False: "***NO***"}
+RESULTS = {True : "   OK   ", False: "***NO***"}
 
-def config_test(description, test_func):
+def config_test(description, test_func, expected_val=None):
+    """Run test and print results. Return 0 if result OK, 1 otherwise."""
     result = test_func()
-    print(description + "..." + results[result])
+    print("{desc}: {res}".format(desc=description, res=RESULTS[result]))
     return 0 if result is True else 1
 
 def check_all():
     num_failed = 0
-    num_failed += config_test("Branch 'master' exists", branch_master_exists)
-    num_failed += config_test("Branch 'master' tracking remote 'origin'", branch_master_tracking_origin)
+    num_failed += config_test("Branch 'master' exists                      ",
+                              branch_master_exists)
+    num_failed += config_test("Branch 'master' tracking remote 'origin'    ",
+                              branch_master_tracking_origin)
     # num_failed += config_test("Branch 'dbedit' exists", branch_dbedit_exists)
-    num_failed += config_test("Remote repo 'origin' set",
+    num_failed += config_test("Remote repo 'origin' set                    ",
                               remote_origin_url_is_set)
-    num_failed += config_test("Remote repo 'origin' is not lingbib/lingbib",
+    num_failed += config_test("Remote repo 'origin' is not lingbib/lingbib ",
                               remote_origin_url_is_not_upstream_repo)
-    num_failed += config_test("Remote repo 'upstream' set to lingbib repo",
+    num_failed += config_test("Remote repo 'upstream' set to lingbib repo  ",
                               remote_upstream_url_is_set)
     if num_failed > 0:
         warning("One or more tests failed.")
