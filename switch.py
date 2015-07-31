@@ -16,6 +16,7 @@ from lib.docopt import docopt
 from lib.sh import git
 
 from util import *
+from defaults import *
 import config
 import messages
 
@@ -50,21 +51,21 @@ def main(argv):
 
 
 def switch_to_master():
-    if config.current_branch() == "master":
+    if config.current_branch() == BRANCH_MASTER:
         print("Already on branch 'master'.")
     else:
         cmd = git.checkout("master", _out=gitout)
 
 
 def switch_to_dbedit(do_reset=False):
-    if config.current_branch() == "dbedit":
+    if config.current_branch() == BRANCH_DBEDIT:
         print("Already on branch 'dbedit'.")
         return
 
     # fetch updates
-    if not config.remote_upstream_url_is_set():
-        config.set_remote_upstream_url()
-    fetch_upstream()
+    if not config.remote_lingbib_url_is_set():
+        config.set_remote_lingbib_url()
+    fetch_lingbib()
 
     if do_reset:
         reset_dbedit_and_switch()
@@ -98,34 +99,34 @@ closed, the branch should be deleted and recreated.
 Do you want to reuse the existing branch?"""
 
 
-def fetch_upstream():
-    info("Fetching updates from Lingbib upstream...")
+def fetch_lingbib():
+    info("Fetching updates from remote 'lingbib'...")
     try:
-        git.fetch("upstream")
+        git.fetch(REMOTE_LINGBIB)
     except sh.ErrorReturnCode as e:
         error("Unable to fetch updates.")
     else:
         info("Up to date.")
 
 def update_dbedit_and_switch():
-    git.checkout("dbedit", _out=gitout)
-    git.rebase("upstream/master", _out=gitout)
+    git.checkout(BRANCH_DBEDIT, _out=gitout)
+    git.rebase("lingbib/master", _out=gitout)
 
 def create_dbedit_and_switch():
     """create the new branch based on master and switch immediately"""
-    git.checkout("-b", "dbedit", "upstream/master", _out=gitout)
+    git.checkout("-b", BRANCH_DBEDIT, "lingbib/master", _out=gitout)
 
 def reset_dbedit_and_switch():
     # delete remote branch, if applicable
-    if config.remote_origin_dbedit_exists():
+    if config.remote_personal_dbedit_exists():
         try:
-            git.push("origin", "--delete", "dbedit")
+            git.push(REMOTE_PERSONAL, "--delete", BRANCH_DBEDIT)
         except sh.ErrorReturnCode as e:
             error(e)
             error("Unable to delete the remote branch.")
 
     # switch to branch, creating it if it doesn't exist
-    git.checkout("-B", "dbedit", "upstream/master", _out=gitout)
+    git.checkout("-B", BRANCH_DBEDIT, "lingbib/master", _out=gitout)
 
 
 if __name__ == '__main__':

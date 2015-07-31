@@ -24,16 +24,17 @@ from lib import sh
 from lib.sh import git
 
 from util import *
+from defaults import *
 
 __author__ =  "Kenneth Hanson"
 __date__ =    "6/27/2015"
 
 
-UPSTREAM_URLS = {"http":  "http://github.com/lingbib/lingbib",
-                 "https": "https://github.com/lingbib/lingbib",
-                 "ssh":   "git@github.com:lingbib/lingbib",
+LINGBIB_URLS = {"http":      "http://github.com/lingbib/lingbib",
                  "http.git":  "http://github.com/lingbib/lingbib.git",
+                 "https":     "https://github.com/lingbib/lingbib",
                  "https.git": "https://github.com/lingbib/lingbib.git",
+                 "ssh":       "git@github.com:lingbib/lingbib",
                  "ssh.git":   "git@github.com:lingbib/lingbib.git"}
 
 
@@ -67,15 +68,12 @@ def check_all():
     num_failed = 0
     num_failed += config_test("Branch 'master' exists                      ",
                               branch_master_exists)
-    num_failed += config_test("Branch 'master' tracking remote 'origin'    ",
-                              branch_master_tracking_origin)
-    # num_failed += config_test("Branch 'dbedit' exists", branch_dbedit_exists)
-    num_failed += config_test("Remote repo 'origin' set                    ",
-                              remote_origin_url_is_set)
-    num_failed += config_test("Remote repo 'origin' is not lingbib/lingbib ",
-                              remote_origin_url_is_not_upstream_repo)
-    num_failed += config_test("Remote repo 'upstream' set to lingbib repo  ",
-                              remote_upstream_url_is_set)
+    num_failed += config_test("Branch 'master' tracking remote 'personal'  ",
+                              branch_master_tracking_personal)
+    num_failed += config_test("Remote repo 'lingbib' set to official repo  ",
+                              remote_lingbib_url_is_set)
+    num_failed += config_test("Remote repo 'personal' set to personal repo ",
+                              remote_personal_url_is_set)
     if num_failed > 0:
         warning("One or more tests failed."
                 " Run `lingbib.py config dump` to see the relevant settings.")
@@ -101,47 +99,47 @@ def current_branch():
     return git("rev-parse", "--abbrev-ref", "HEAD").strip()
 
 def branch_master_exists():
-    return 'master' in git.branch()
+    return BRANCH_MASTER in git.branch()
 
-def branch_master_tracking_origin():
-    return 'origin' in git.config("branch.master.remote")
+def branch_master_tracking_personal():
+    try:
+        return REMOTE_PERSONAL in git.config("branch.master.remote")
+    except sh.ErrorReturnCode:
+        return False
 
 def branch_dbedit_exists():
-    return 'dbedit' in git.branch()
+    return BRANCH_DBEDIT in git.branch()
 
-def remote_origin_dbedit_exists():
-    return 'dbedit' in git.branch("-r")
+def remote_personal_dbedit_exists():
+    return REMOTE_PERSONAL_DBEDIT in git.branch("-r")
     
-def remote_origin_url():
+def remote_personal_url():
     try:
-        return git.config("remote.origin.url").strip()
+        return git.config("remote.personal.url").strip()
     except sh.ErrorReturnCode:
         return None
 
-def remote_origin_url_is_set():
-    return remote_origin_url() is not None
-
-def remote_origin_url_is_not_upstream_repo():
-    url = remote_origin_url()
+def remote_personal_url_is_set():
+    url = remote_personal_url()
     if url is None:
-        return True
+        return False
     else:
-        return url not in UPSTREAM_URLS.values()
+        return url not in LINGBIB_URLS.values()
 
-def remote_upstream_url():
+def remote_lingbib_url():
     try:
-        return git.config("remote.upstream.url").strip()
+        return git.config("remote.lingbib.url").strip()
     except sh.ErrorReturnCode:
         return None
 
 # TODO: decide whether to switch to substring matching
 #   for "github.com" and "lingbib/lingbib"
-def remote_upstream_url_is_set():
-    url = remote_upstream_url()
+def remote_lingbib_url_is_set():
+    url = remote_lingbib_url()
     if url is None:
         return False
     else:
-        return url in UPSTREAM_URLS.values()
+        return url in LINGBIB_URLS.values()
 
 def using_ssh_urls():
     try:
@@ -171,49 +169,49 @@ def uncommitted_staged_changes_exist():
 #
 
 def set_defaults():
-    if not remote_origin_url_is_set():
-        warning("Remote 'origin' not set. "
+    if not remote_personal_url_is_set():
+        warning("Remote 'personal' not set. "
                 "Please set it to your personal fork manually.")
         warning("Skipping other settings that depend on this.")
     else:
         if not branch_master_exists():
-            git.checkout("master", "remote/origin")
-        elif not branch_master_tracking_origin():
+            git.checkout("master", "remote/personal")
+        elif not branch_master_tracking_personal():
             set_branch_master_tracking()
 
-    if not remote_upstream_url_is_set():
-        set_remote_upstream_url()
+    if not remote_lingbib_url_is_set():
+        set_remote_lingbib_url()
 
 
 def set_branch_master_tracking():
-    if branch_master_tracking_origin():
-        info("Branch 'master' already tracking origin.")
+    if branch_master_tracking_personal():
+        info("Branch 'master' already tracking 'personal'.")
     else:
         try:
-            git.branch("--set-upstream-to", "origin/master", "master")
+            git.branch("--set-lingbib-to", REMOTE_PERSONAL_MASTER, "master")
         except sh.ErrorReturnCode as e:
             error(e.stderr)
             error("Unable to set tracking for branch 'master'."
                   " Please fix any Git problems and try again.")
             exit(1)
         else:
-            info("Upstream repo set.")
+            info("Master branch set to track personal repo.")
 
 
-def set_remote_upstream_url():
-    if remote_upstream_url_is_set():
-        info("Upstream repo already set.")
+def set_remote_lingbib_url():
+    if remote_lingbib_url_is_set():
+        info("Remote repo 'lingbib' already set.")
     else:
-        info("Setting upstream repo now...")
+        info("Setting remote repo 'lingbib' now...")
         try:
-            git.remote.add("upstream", "https://github.com/lingbib/lingbib.git")
+            git.remote.add("lingbib", "https://github.com/lingbib/lingbib.git")
         except sh.ErrorReturnCode as e:
             error(e.stderr)
-            error("Unable to set upstream repo."
+            error("Unable to set remote repo 'lingbib'."
                   " Please fix any Git problems and try again.")
             exit(1)
         else:
-            info("Upstream repo set.")
+            info("Remote repo 'lingbib' set.")
     
 
 # def test():

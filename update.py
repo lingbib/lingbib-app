@@ -71,26 +71,26 @@ def update_personal_db(personal_db_path, debug_mode=False):
                   "Please fix any Git problems and try again.")
             exit(1)
 
-    # make sure upstream repo is set
-    if not config.remote_upstream_url_is_set():
-        config.set_remote_upstream_url()
+    # make sure remote 'lingbib' is set
+    if not config.remote_lingbib_url_is_set():
+        config.set_remote_lingbib_url()
     
-    # fetch updates from upstream master
+    # fetch updates from lingbib/master
     if debug_mode:
         debug("Skipping pull to branch 'master'.")
     else:
         info("Pulling updates to master database...")
         try:
-            git.pull("--rebase upstream master".split())
+            git.pull("--rebase lingbib master".split())
         except sh.ErrorReturnCode as e:
             error(e.stderr)
-            error("Please run 'git pull --rebase upstream master' and resolve "
+            error("Please run 'git pull --rebase lingbib master' and resolve "
                   "the conflicts, then try again.")
             exit(1)
         else:
             info("Update complete.")
 
-    # fetch updates from origin (personal repo) master
+    # fetch updates from remote "personal"
     # TODO
     
     # backup current personal bibfile
