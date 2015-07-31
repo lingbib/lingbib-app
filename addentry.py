@@ -3,15 +3,12 @@
 """
 Usage:
   lingbib.py addentry [options] FILE
-  lingbib.py addentry [options] (-i | --interactive)
   lingbib.py --help
 
 Arguments:
   FILE  File containing new entries to process.
   
 Options:
-  -i --interactive  Opens the default editor for quick data entry,
-                      on systems where this feature exists.
   -h --help         Show this help text and quit.
 """
 
@@ -21,7 +18,7 @@ from lib.docopt import docopt
 from lib.sh import bibtool
 from lib.sh import git
 
-import defaults
+import defs
 from util import *
 
 __author__ =  "Kenneth Hanson"
@@ -36,8 +33,6 @@ def main(argv):
 
     if args['FILE'] is not None:
         addentry(args['FILE'])
-    elif args['--interactive']:
-        raise NotImplementedError('Interactive mode not yet implemented.')
     else:
         # TODO: remove after testing code
         raise Exception("Reached the end of command line arg processing"
@@ -48,13 +43,14 @@ def addentry(filepath):
     bibtool('-r', "bibtool/keygen.rsc", filepath, o=filepath)
 
     # merge with master database
-    bibtool("-r", "bibtool/sanitize.rsc", filepath, defaults.DB_MASTER, o=defaults.DB_MASTER)
+    bibtool("-r", "bibtool/sanitize.rsc", filepath, defs.DB_MASTER, o=defs.DB_MASTER)
 
     # Update macro and refs file
-    bibtool("-r", "bibtool/ref-extraction.rsc", defaults.DB_MASTER, o="MacrosAndRefs.txt")
+    bibtool("-r", "bibtool/ref-extraction.rsc", defs.DB_MASTER, o="MacrosAndRefs.txt")
 
     # Then stage the new changes
-    git.add(defaults.DB_MASTER)
+    git.add(defs.DB_MASTER)
+
 
 
 if __name__ == '__main__':
