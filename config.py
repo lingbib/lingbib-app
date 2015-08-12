@@ -24,7 +24,7 @@ from lib import sh
 from lib.sh import git
 
 from util import *
-from defaults import *
+from defs import *
 
 __author__ =  "Kenneth Hanson"
 __date__ =    "6/27/2015"

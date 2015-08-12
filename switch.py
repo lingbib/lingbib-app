@@ -16,7 +16,7 @@ from lib.docopt import docopt
 from lib.sh import git
 
 from util import *
-from defaults import *
+from defs import *
 import config
 import messages
 
