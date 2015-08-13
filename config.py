@@ -188,7 +188,7 @@ def set_branch_master_tracking():
         info("Branch 'master' already tracking 'personal'.")
     else:
         try:
-            git.branch("--set-lingbib-to", REMOTE_PERSONAL_MASTER, "master")
+            git.branch("--set-upstream-to", REMOTE_PERSONAL_MASTER, "master")
         except sh.ErrorReturnCode as e:
             error(e.stderr)
             error("Unable to set tracking for branch 'master'."
