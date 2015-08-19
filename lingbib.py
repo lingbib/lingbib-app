@@ -13,9 +13,8 @@ personal database with a remote repository.
 Commands:
   # general commands
   config  Check configuration, and attempt to fix any problems.
-  pull    Fetch updates from lingbib (upstream) or personal remote
-            repo (origin).
-  push    Update personal remote repo (origin) with changes to local repo.
+  pull    Fetch updates from remote repo 'lingbib' or 'personal'.
+  push    Update remote repo 'personal' with changes to local repo.
   switch  Switch between normal (master) and database editing (dbedit) branches.
 
   # branch "master" only
