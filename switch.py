@@ -110,11 +110,11 @@ def fetch_lingbib():
 
 def update_dbedit_and_switch():
     git.checkout(BRANCH_DBEDIT, _out=gitout)
-    git.rebase("lingbib/master", _out=gitout)
+    git.rebase(REMOTE_LINGBIB_MASTER, _out=gitout)
 
 def create_dbedit_and_switch():
     """create the new branch based on master and switch immediately"""
-    git.checkout("-b", BRANCH_DBEDIT, "lingbib/master", _out=gitout)
+    git.checkout("-b", BRANCH_DBEDIT, REMOTE_LINGBIB_MASTER, _out=gitout)
 
 def reset_dbedit_and_switch():
     # delete remote branch, if applicable
@@ -126,7 +126,7 @@ def reset_dbedit_and_switch():
             error("Unable to delete the remote branch.")
 
     # switch to branch, creating it if it doesn't exist
-    git.checkout("-B", BRANCH_DBEDIT, "lingbib/master", _out=gitout)
+    git.checkout("-B", BRANCH_DBEDIT, REMOTE_LINGBIB_MASTER, _out=gitout)
 
 
 if __name__ == '__main__':
