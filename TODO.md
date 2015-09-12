@@ -14,6 +14,7 @@ Check if feasible:
 * Add setup of unified style sheet from semprag repo (or decide to rely on manual installation)
 
 Future:
+* Add test suite
 * Finalize dependencies
 * Check compatibility with different versions of Python and decide what to support
 * Determine mechanism for installation and package accordingly
