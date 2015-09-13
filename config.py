@@ -190,11 +190,6 @@ def set_branch_master_tracking():
     """
     if branch_master_tracking_personal():
         info("Branch 'master' already tracking 'personal'.")
-    elif not remote_personal_url_is_set():
-        # throw an error for now, since there is nothing that can be done
-        raise Exception(
-            "Remote 'personal' not set, so branch 'master' cannot be"
-            " set to track it.")
     else:
         try:
             # start by fetching, since Git won't set the upstream repo
