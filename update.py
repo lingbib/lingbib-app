@@ -60,7 +60,7 @@ def update_personal_db(personal_db_path, skip_backup):
         try:
             git.checkout("master")
         except sh.ErrorReturnCode as e:
-            error(e.stderr)
+            gitout(e.stderr)
             error("Unable to switch branches. "
                   "Please fix any Git problems and try again.")
             exit(1)
@@ -74,7 +74,7 @@ def update_personal_db(personal_db_path, skip_backup):
     try:
         git.pull("--rebase lingbib master".split())
     except sh.ErrorReturnCode as e:
-        error(e.stderr)
+        gitout(e.stderr)
         error("Please run 'git pull --rebase lingbib master' and resolve "
               "the conflicts, then try again.")
         exit(1)

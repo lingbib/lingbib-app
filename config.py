@@ -197,7 +197,7 @@ def set_branch_master_tracking():
             git.fetch("personal")
             git.branch("--set-upstream-to", REMOTE_PERSONAL_MASTER, "master")
         except sh.ErrorReturnCode as e:
-            error(e.stderr)
+            gitout(e.stderr)
             error("Unable to set tracking for branch 'master'."
                   " Please fix any Git problems and try again.")
             exit(1)
@@ -213,7 +213,7 @@ def set_remote_lingbib_url():
         try:
             git.remote.add("lingbib", "https://github.com/lingbib/lingbib.git")
         except sh.ErrorReturnCode as e:
-            error(e.stderr)
+            gitout(e.stderr)
             error("Unable to set remote repo 'lingbib'."
                   " Please fix any Git problems and try again.")
             exit(1)
