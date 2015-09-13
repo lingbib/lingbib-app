@@ -184,10 +184,22 @@ def set_defaults():
 
 
 def set_branch_master_tracking():
+    """Set branch 'master' to track remote 'personal'.
+
+    Should only be called if the URL for 'personal' is set.
+    """
     if branch_master_tracking_personal():
         info("Branch 'master' already tracking 'personal'.")
+    elif not remote_personal_url_is_set():
+        # throw an error for now, since there is nothing that can be done
+        raise Exception(
+            "Remote 'personal' not set, so branch 'master' cannot be"
+            " set to track it.")
     else:
         try:
+            # start by fetching, since Git won't set the upstream repo
+            # for a branch if there isn't a local copy yet
+            git.fetch("personal")
             git.branch("--set-upstream-to", REMOTE_PERSONAL_MASTER, "master")
         except sh.ErrorReturnCode as e:
             error(e.stderr)
