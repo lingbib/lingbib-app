@@ -1,6 +1,5 @@
 Bugfixes:
-* Fix "setdefaults" to fetch before setting tracking
-* Fix error printing in "setdefaults" and elsewhere to prepend "GIT:" line by line
+
 
 Features:
 * Add proper check for Bibtool at program start
