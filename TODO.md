@@ -3,6 +3,7 @@ Bugfixes:
 
 Features:
 * Add proper check for Bibtool at program start
+* Add interactive setup of Git config
 * Add setup of personal repo with username prompt
 * Add links to reference materials in program output
 * Add a global config file
