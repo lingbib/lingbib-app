@@ -2,9 +2,9 @@
 
 """
 Usage:
-  lingbib.py <command> [<args>...]
-  lingbib.py --help
-  lingbib.py --version
+  lingbib <command> [<args>...]
+  lingbib --help
+  lingbib --version
 
 Use this script to fetch updates from Lingbib, merge them with your personal
 database, make contributions to the master database, and sync your
