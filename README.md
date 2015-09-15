@@ -1,5 +1,7 @@
 # lingbib-app
-This is the helper program for [lingbib](https://github.com/lingbib/lingbib) users.
+This repository contains the helper program for [Lingbib](https://github.com/lingbib/lingbib) users, called `lingbib`.
+
+## Current Status
 
 The program is under development, and not yet feature complete. See the [Lingbib wiki](https://github.com/lingbib/lingbib/wiki/) for documentation.
 
