@@ -8,7 +8,7 @@ The program is under development, and not yet feature complete. See the [Lingbib
 
 ## Installation
 
-See the [setup page on the wiki](https://github.com/lingbib/lingbib/wiki/Setup-instructions) for instructions.
+See the [INSTALL.md](INSTALL.md) for instructions.
 
 
 ## Usage
