@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+#lib/ ## using this name for local copies of external packages
 lib64/
 parts/
 sdist/
